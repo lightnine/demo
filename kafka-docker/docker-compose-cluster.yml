@@ -1,0 +1,64 @@
+version: "3"
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - ./data/zookeeper/data:/data
+      - ./data/zookeeper/datalog:/datalog
+      - ./data/zookeeper/logs:/logs
+    restart: always
+  kafka0:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    container_name: kafka0
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka0:9092 #供客户端使用的地址
+      KAFKA_LISTENERS: PLAINTEXT://:9092 #kafka监听地址
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./data/kafka/node0:/kafka
+    restart: on-failure
+  kafka1:
+    image: wurstmeister/kafka
+    depends_on:
+      - kafka0
+    container_name: kafka1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9093 #供客户端使用的地址
+      KAFKA_LISTENERS: PLAINTEXT://:9093 #kafka监听地址
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./data/kafka/node1:/kafka
+    restart: on-failure
+  kafka2:
+    image: wurstmeister/kafka
+    depends_on:
+      - kafka1
+    container_name: kafka2
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9094 #供客户端使用的地址
+      KAFKA_LISTENERS: PLAINTEXT://:9094 #kafka监听地址
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2
+    ports:
+      - "9094:9094"
+    volumes:
+      - ./data/kafka/node2:/kafka
+    restart: on-failure
+

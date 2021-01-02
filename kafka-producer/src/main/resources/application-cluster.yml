@@ -1,0 +1,18 @@
+spring:
+  kafka:
+    # kafka服务地址
+    bootstrap-servers:
+      - http://192.168.3.5:9092
+      - http://192.168.3.5:9093
+      - http://192.168.3.5:9094
+    producer:
+      # 写入失败时的重试次数
+      retries: 3
+      # acks(0:不等待服务端确认返回，1：不等待所有副本确认返回 all:leader以及所有副本确认返回)
+      acks: all
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
